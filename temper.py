@@ -121,7 +121,9 @@ class TemperHandler(object):
 
 
 if __name__ == '__main__':
+    if not "COLLECTD_HOSTNAME" in os.environ:
+        os.environ["COLLECTD_HOSTNAME"] = "localhost"
     th = TemperHandler()
     devs = th.get_devices()
     for i, dev in enumerate(devs):
-        print(str(dev.get_temperature()))
+        print("PUTVAL "+os.environ["COLLECTD_HOSTNAME"]+"/temper"+str(i)+"/temperature N:"+str(dev.get_temperature()))
