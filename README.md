@@ -12,7 +12,7 @@ sudo ln -s `pwd`/temper.py /usr/local/bin/temper.py
 ```
 LoadPlugin exec
 <Plugin exec>
-  Exec your_username "/usr/local/bin/temper.py"
+  Exec "your_username:input" "/usr/local/bin/temper.py"
 </Plugin>
 ```
 
