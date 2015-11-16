@@ -60,6 +60,10 @@ class TemperDevice(object):
                     except usb.USBError as err:
                         LOGGER.debug(err)
                 self._device.set_configuration()
+
+                for interface in [0, 1]:
+                    usb.util.claim_interface(self._device, interface)
+
                 self._device.ctrl_transfer(bmRequestType=0x21, bRequest=0x09,
                     wValue=0x0201, wIndex=0x00, data_or_wLength='\x01\x01',
                     timeout=TIMEOUT)
@@ -112,7 +116,6 @@ class TemperHandler(object):
         self._devices = []
         for vid, pid in VIDPIDS:
             for device in usb.core.find(find_all=True, idVendor=vid, idProduct=pid):
-                # print(str(device))
                 self._devices.append(TemperDevice(device))
 	LOGGER.info('Found {0} TEMPer devices'.format(len(self._devices)))
 
@@ -126,4 +129,4 @@ if __name__ == '__main__':
     th = TemperHandler()
     devs = th.get_devices()
     for i, dev in enumerate(devs):
-        print("PUTVAL "+os.environ["COLLECTD_HOSTNAME"]+"/temper"+str(i)+"/temperature N:"+str(dev.get_temperature()))
+        print("PUTVAL "+os.environ["COLLECTD_HOSTNAME"]+"/temper-"+str(i)+"/temperature N:"+str(dev.get_temperature()))
