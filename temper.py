@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2
 # encoding: utf-8
 # based on https://github.com/padelt/temper-python
 
@@ -21,7 +21,6 @@ COMMANDS = {
     'ini1': '\x01\x82\x77\x01\x00\x00\x00\x00',
     'ini2': '\x01\x86\xff\x01\x00\x00\x00\x00',
 }
-LOGGER = logging.getLogger(__name__)
 
 class TemperDevice(object):
     """
@@ -33,7 +32,7 @@ class TemperDevice(object):
         self._ports = getattr(device, 'port_number', None)
         self._scale = 1.0
         self._offset = 0.0
-        LOGGER.debug('Found device | Bus:{0} Ports:{1}'.format(self._bus, self._ports))
+        logging.debug('Found device | Bus:{0} Ports:{1}'.format(self._bus, self._ports))
 
     def get_ports(self):
         if self._ports:
@@ -52,13 +51,12 @@ class TemperDevice(object):
         try:
             # Take control of device if required
             if self._device.is_kernel_driver_active:
-                LOGGER.debug('Taking control of device on bus {0} ports '
-                    '{1}'.format(self._bus, self._ports))
+                logging.debug('Taking control of device on bus {0} ports {1}'.format(self._bus, self._ports))
                 for interface in [0, 1]:
                     try:
                         self._device.detach_kernel_driver(interface)
                     except usb.USBError as err:
-                        LOGGER.debug(err)
+                        logging.debug(err)
                 self._device.set_configuration()
 
                 for interface in [0, 1]:
@@ -85,7 +83,7 @@ class TemperDevice(object):
                     "Permission problem accessing USB. "
                     "Maybe I need to run as root?")
             else:
-                LOGGER.error(err)
+                logging.error(err)
                 raise
         # Interpret device response
         data_s = "".join([chr(byte) for byte in data])
@@ -98,7 +96,7 @@ class TemperDevice(object):
         Send device a control request with standard parameters and <data> as
         payload.
         """
-        LOGGER.debug('Ctrl transfer: {0}'.format(data))
+        logging.debug('Ctrl transfer: {0}'.format(data))
         self._device.ctrl_transfer(bmRequestType=0x21, bRequest=0x09,
             wValue=0x0200, wIndex=0x01, data_or_wLength=data, timeout=TIMEOUT)
 
@@ -107,7 +105,7 @@ class TemperDevice(object):
         Read data from device.
         """
         data = self._device.read(ENDPOINT, REQ_INT_LEN, interface=INTERFACE, timeout=TIMEOUT)
-        LOGGER.debug('Read data: {0}'.format(data))
+        logging.debug('Read data: {0}'.format(data))
         return data
 
 
@@ -117,7 +115,7 @@ class TemperHandler(object):
         for vid, pid in VIDPIDS:
             for device in usb.core.find(find_all=True, idVendor=vid, idProduct=pid):
                 self._devices.append(TemperDevice(device))
-	LOGGER.info('Found {0} TEMPer devices'.format(len(self._devices)))
+        logging.info('Found {0} TEMPer devices'.format(len(self._devices)))
 
     def get_devices(self):
         return self._devices
