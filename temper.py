@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python
 # encoding: utf-8
 # based on https://github.com/padelt/temper-python
 
@@ -10,7 +10,7 @@ import re
 import logging
 
 VIDPIDS = [
-    (0x0c45L, 0x7401L),
+    (0x0c45, 0x7401),
 ]
 REQ_INT_LEN = 8
 ENDPOINT = 0x82

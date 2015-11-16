@@ -2,7 +2,7 @@
 
 ```shell
 sudo apt-get install python-usb python-pip
-sudo pip install -I pyusb==1.0.0b1
+sudo pip install -r requirements.txt
 sudo cp 60-temper.rules /lib/udev/rules.d/
 sudo ln -s `pwd`/temper.py /usr/local/bin/temper.py
 ```
