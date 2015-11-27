@@ -57,6 +57,7 @@ class TemperDevice(object):
                         self._device.detach_kernel_driver(interface)
                     except usb.USBError as err:
                         logging.debug(err)
+                self._device.reset()
                 self._device.set_configuration()
 
                 for interface in [0, 1]:
@@ -75,7 +76,6 @@ class TemperDevice(object):
             self._interrupt_read()
             self._control_transfer(COMMANDS['temp'])
             data = self._interrupt_read()
-            self._device.reset()
         except usb.USBError as err:
             # Catch the permissions exception and add our message
             if "not permitted" in str(err):
