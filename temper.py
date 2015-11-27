@@ -86,8 +86,12 @@ class TemperDevice(object):
                 logging.error(err)
                 raise
         # Interpret device response
+        # Debugging (print response bytes)
+        # for byte in data:
+        #     print("%02x" % byte),
+        # print("")
         data_s = "".join([chr(byte) for byte in data])
-        temp_c = 125.0/32000.0*(struct.unpack('>h', data_s[2:4])[0])
+        temp_c = (struct.unpack('>h', data_s[4:6])[0])/256.0
         temp_c = temp_c * self._scale + self._offset
         return temp_c
 
