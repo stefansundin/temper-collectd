@@ -105,7 +105,7 @@ class TemperDevice(object):
         """
         Read data from device.
         """
-        data = self._device.read(ENDPOINT, REQ_INT_LEN, interface=INTERFACE, timeout=TIMEOUT)
+        data = self._device.read(ENDPOINT, REQ_INT_LEN, timeout=TIMEOUT)
         logging.debug('Read data: {0}'.format(data))
         return data
 
@@ -123,7 +123,7 @@ class TemperHandler(object):
 
 
 if __name__ == '__main__':
-    if usb.__version__ != "1.0.0b1":
+    if usb.__version__ != "1.0.0":
         sys.stderr.write("Unsupported pyusb version: %s\n" % usb.__version__)
     if not "COLLECTD_HOSTNAME" in os.environ:
         os.environ["COLLECTD_HOSTNAME"] = "localhost"
