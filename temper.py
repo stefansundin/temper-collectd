@@ -77,11 +77,8 @@ class TemperDevice(object):
             self._control_transfer(COMMANDS['temp'])
             data = self._interrupt_read()
         except usb.USBError as err:
-            # Catch the permissions exception and add our message
-            if "not permitted" in str(err):
-                raise Exception(
-                    "Permission problem accessing USB. "
-                    "Maybe I need to run as root?")
+            if "insufficient permissions" in str(err):
+                raise Exception("Permission problem accessing USB. Did you install the udev rule and replug the device?")
             else:
                 logging.error(err)
                 raise
@@ -126,6 +123,8 @@ class TemperHandler(object):
 
 
 if __name__ == '__main__':
+    if usb.__version__ != "1.0.0b1":
+        sys.stderr.write("Unsupported pyusb version: %s\n" % usb.__version__)
     if not "COLLECTD_HOSTNAME" in os.environ:
         os.environ["COLLECTD_HOSTNAME"] = "localhost"
     th = TemperHandler()
