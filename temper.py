@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # encoding: utf-8
 # based on https://github.com/padelt/temper-python
 
@@ -17,10 +17,11 @@ ENDPOINT = 0x82
 INTERFACE = 1
 TIMEOUT = 5000
 COMMANDS = {
-    'temp': '\x01\x80\x33\x01\x00\x00\x00\x00',
-    'ini1': '\x01\x82\x77\x01\x00\x00\x00\x00',
-    'ini2': '\x01\x86\xff\x01\x00\x00\x00\x00',
+    'temp': b'\x01\x80\x33\x01\x00\x00\x00\x00',
+    'ini1': b'\x01\x82\x77\x01\x00\x00\x00\x00',
+    'ini2': b'\x01\x86\xff\x01\x00\x00\x00\x00',
 }
+IS_PY2 = sys.version[0] == '2'
 
 class TemperDevice(object):
     """
@@ -83,11 +84,11 @@ class TemperDevice(object):
                 logging.error(err)
                 raise
         # Interpret device response
-        # Debugging (print response bytes)
-        # for byte in data:
-        #     print("%02x" % byte),
-        # print("")
-        data_s = "".join([chr(byte) for byte in data])
+        if IS_PY2:
+            data_s = b"".join([chr(byte) for byte in data])
+        else:
+            data_s = data.tobytes()
+        logging.debug("Response bytes: " + str(data_s)),
         temp_c = (struct.unpack('>h', data_s[4:6])[0])/256.0
         temp_c = temp_c * self._scale + self._offset
         return temp_c
@@ -123,6 +124,7 @@ class TemperHandler(object):
 
 
 if __name__ == '__main__':
+    # logging.basicConfig(level=logging.DEBUG)
     if usb.__version__ != "1.0.0":
         sys.stderr.write("Unsupported pyusb version: %s\n" % usb.__version__)
     if not "COLLECTD_HOSTNAME" in os.environ:
